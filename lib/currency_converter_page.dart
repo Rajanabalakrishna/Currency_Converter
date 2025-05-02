@@ -17,6 +17,16 @@ class _CurrencyConverterMaterialPageState extends State<CurrencyConverterMateria
   final TextEditingController textEditingController=TextEditingController();
   List<String>dropdownItems=["America","Pakistan","Bangladesh","Russia","Qatar"];
   String Selected_Value="America";
+
+  // Add this map to your _CurrencyConverterMaterialPageState class
+  final Map<String, double> exchangeRates = {
+    "America": 81.0,      // USD to INR
+    "Pakistan": 0.29,     // PKR to INR (approx)
+    "Bangladesh": 0.75,   // BDT to INR (approx)
+    "Russia": 0.89,       // RUB to INR (approx)
+    "Qatar": 22.41,       // QAR to INR (approx)
+  };
+
   @override
   Widget build(BuildContext context)
 {
@@ -81,10 +91,35 @@ class _CurrencyConverterMaterialPageState extends State<CurrencyConverterMateria
               padding: const EdgeInsets.all(20.0),
               child: ElevatedButton(onPressed: (){
                 setState(() {
-                  result=double.parse(textEditingController.text)*81;
+
+                  final input=double.parse(textEditingController.text);
+                  if(input!=null)
+                    {
+                      result=input*(exchangeRates[Selected_Value]??1);
+                    }
+                  else
+                    {
+                      result=0;
+                    }
                 });
               },style:ElevatedButton.styleFrom(backgroundColor: Colors.black,foregroundColor:Colors.white,minimumSize:const Size(double.infinity, 50),shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)) ),
                   child:Text("Convert")),
+            ),
+            DropdownButton<String>(
+              value: Selected_Value, // The currently selected value in the dropdown
+              isExpanded: true,
+            // Ensures the dropdown takes up the full width of its parent container
+              onChanged: (String? newValue) {
+                setState(() {
+                  Selected_Value = newValue!; // Updates the selected value when a user selects an option
+                });
+              },
+              items: dropdownItems.map<DropdownMenuItem<String>>((String value) {
+                return DropdownMenuItem<String>(
+                  value: value, // The value of the dropdown item when selected
+                  child: Text(value), // The text displayed for this item in the dropdown list
+                );
+              }).toList(),
             )
           ],
         ),
